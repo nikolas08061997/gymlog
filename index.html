@@ -120,7 +120,6 @@
     }
     .day-card:active { background: var(--s2); transform: scale(0.98); }
     .day-card.done { border-color: rgba(48,209,88,0.3); }
-    .dc-day { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
     .dc-name { font-size: 19px; font-weight: 600; }
     .dc-excount { font-size: 12px; color: var(--text2); margin-top: 4px; }
     .dc-right { display: flex; align-items: center; gap: 10px; }
@@ -284,53 +283,57 @@
 // ─────────────────────────────────────────────────────────
 const PLAN = [
   {
-    label: "Tag 1", name: "Push",
+    label: "Upper Push",
+    name: "Upper Push",
     muscles: ["Brust", "Schulter", "Trizeps"],
     exercises: [
-      { name: "Bankdrücken", muscle: "Brust", note: "Schulterbreiter Griff, kontrolliert absenken", sets: [{kg:82.5,reps:8},{kg:82.5,reps:8},{kg:80,reps:8},{kg:77.5,reps:8}] },
-      { name: "Schrägbank Drücken", muscle: "Brust", note: "30° Neigung, volle Bewegungsamplitude", sets: [{kg:62.5,reps:10},{kg:62.5,reps:10},{kg:60,reps:10}] },
-      { name: "Schulterdrücken", muscle: "Schulter", note: "Stehend oder sitzend, Ellbogen leicht vorne", sets: [{kg:52.5,reps:8},{kg:52.5,reps:8},{kg:50,reps:8},{kg:50,reps:8}] },
-      { name: "Seitheben", muscle: "Schulter", note: "Leicht gebeugte Arme, kontrolliert absenken", sets: [{kg:13,reps:15},{kg:12,reps:15},{kg:12,reps:15}] },
-      { name: "Trizeps Pushdown", muscle: "Trizeps", note: "Kabel, Seil-Aufsatz, Ellbogen am Körper", sets: [{kg:37.5,reps:12},{kg:35,reps:12},{kg:35,reps:12}] },
+      { name: "Langhantel Schrägbankdrücken (30°)", muscle: "Brust", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Kurzhantel Schulterdrücken", muscle: "Schulter", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Chest Press Maschine", muscle: "Brust", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Kabelzug Seitheben", muscle: "Schulter", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Kabelzug Trizeps Pushdown", muscle: "Trizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
     ]
   },
   {
-    label: "Tag 2", name: "Pull",
-    muscles: ["Rücken", "Bizeps"],
+    label: "Lower Quad",
+    name: "Lower Quad",
+    muscles: ["Quadrizeps", "Gluteus", "Core"],
     exercises: [
-      { name: "Klimmzüge", muscle: "Rücken", note: "Weiter Griff, volle Streckung unten", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:7},{kg:0,reps:6}] },
-      { name: "LH-Rudern", muscle: "Rücken", note: "Rücken gerade, Stange zur Hüfte ziehen", sets: [{kg:72.5,reps:8},{kg:72.5,reps:8},{kg:70,reps:8},{kg:70,reps:8}] },
-      { name: "Latzug", muscle: "Rücken", note: "Schulterbreiter Griff, Brust rausstrecken", sets: [{kg:67.5,reps:10},{kg:65,reps:10},{kg:65,reps:10}] },
-      { name: "Gesichtszüge", muscle: "Schulter", note: "Kabel auf Augenhöhe, nach außen drehen", sets: [{kg:22.5,reps:15},{kg:20,reps:15},{kg:20,reps:15}] },
-      { name: "Bizepscurl", muscle: "Bizeps", note: "LH oder KH, keine Schwungbewegung", sets: [{kg:32.5,reps:12},{kg:30,reps:12},{kg:30,reps:12}] },
+      { name: "Langhantel Kniebeuge", muscle: "Quadrizeps", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Bulgarischer Split Squat", muscle: "Quadrizeps", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Beinpresse", muscle: "Quadrizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Leg Extension Maschine", muscle: "Quadrizeps", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Plank", muscle: "Core", sets: [{kg:0,reps:45},{kg:0,reps:45},{kg:0,reps:45}] },
     ]
   },
   {
-    label: "Tag 3", name: "Legs",
-    muscles: ["Quadrizeps", "Hamstrings", "Waden"],
+    label: "Upper Pull",
+    name: "Upper Pull",
+    muscles: ["Rücken", "Bizeps", "Schulter"],
     exercises: [
-      { name: "Kniebeugen", muscle: "Quadrizeps", note: "Schulterbreit, Knie über Zehen, tief squatten", sets: [{kg:102.5,reps:6},{kg:102.5,reps:6},{kg:100,reps:6},{kg:100,reps:6}] },
-      { name: "Beinpresse", muscle: "Quadrizeps", note: "Füße schulterbreit, tiefe Position", sets: [{kg:142.5,reps:10},{kg:140,reps:10},{kg:140,reps:10}] },
-      { name: "Romanian Deadlift", muscle: "Hamstrings", note: "Rücken gerade, Stange am Bein entlang", sets: [{kg:82.5,reps:8},{kg:82.5,reps:8},{kg:80,reps:8},{kg:80,reps:8}] },
-      { name: "Beinbeuger", muscle: "Hamstrings", note: "Maschine, langsam und kontrolliert absenken", sets: [{kg:52.5,reps:12},{kg:50,reps:12},{kg:50,reps:12}] },
-      { name: "Wadenheben", muscle: "Waden", note: "Langsam mit voller Dehnung unten", sets: [{kg:62.5,reps:15},{kg:62.5,reps:15},{kg:60,reps:15},{kg:60,reps:15}] },
+      { name: "Langhantel Pendlay Row", muscle: "Rücken", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Kurzhantel Einarmiges Rudern", muscle: "Rücken", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Lat Pulldown Maschine", muscle: "Rücken", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Kabelzug Face Pull", muscle: "Schulter", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Kabelzug Bizeps Curl", muscle: "Bizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
     ]
   },
   {
-    label: "Tag 4", name: "Upper",
-    muscles: ["Brust", "Rücken", "Schulter"],
+    label: "Lower Hip",
+    name: "Lower Hip",
+    muscles: ["Hintere Oberschenkel", "Gluteus", "Core"],
     exercises: [
-      { name: "KH-Bankdrücken", muscle: "Brust", note: "Kurzhanteln, maximale Dehnung unten", sets: [{kg:32.5,reps:10},{kg:32.5,reps:10},{kg:30,reps:10}] },
-      { name: "Einarmiges Rudern", muscle: "Rücken", note: "Bank als Stütze, volle Streckung", sets: [{kg:37.5,reps:10},{kg:37.5,reps:10},{kg:35,reps:10}] },
-      { name: "Arnold Press", muscle: "Schulter", note: "Rotation während der Aufwärtsbewegung", sets: [{kg:22.5,reps:10},{kg:22.5,reps:10},{kg:20,reps:10}] },
-      { name: "Butterfly", muscle: "Brust", note: "Maschine, kontrollierte Bewegung", sets: [{kg:47.5,reps:12},{kg:45,reps:12},{kg:45,reps:12}] },
-      { name: "Schulterpresse Maschine", muscle: "Schulter", note: "Ellbogen auf 90°, nicht überstrecken", sets: [{kg:42.5,reps:12},{kg:40,reps:12},{kg:40,reps:12}] },
+      { name: "Rumänisches Kreuzheben (RDL)", muscle: "Hintere Oberschenkel", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Kabelzug Glute Kickback", muscle: "Gluteus", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Leg Curl Maschine", muscle: "Hintere Oberschenkel", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Concept2 RowERG", muscle: "Rücken", sets: [{kg:0,reps:500},{kg:0,reps:500}] },
+      { name: "Cable Crunch", muscle: "Core", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
     ]
   },
 ];
 // ─────────────────────────────────────────────────────────
 
-const completedDays = new Set();
+const completedDays = loadCompleted();
 let currentDayIdx = 0;
 let currentExIdx = 0;
 let sessionSets = [];
@@ -365,14 +368,19 @@ function showWeek() {
   document.getElementById('ni-week').classList.add('active');
 }
 
+function loadCompleted() {
+  try { return new Set(JSON.parse(localStorage.getItem('completedPlans')) || []); } catch { return new Set(); }
+}
+function saveCompleted() {
+  try { localStorage.setItem('completedPlans', JSON.stringify([...completedDays])); } catch {}
+}
+
 function renderDayCards() {
-  const weekDays = ['Mo','Di','Mi','Do','Fr','Sa','So'];
   document.getElementById('day-cards').innerHTML = PLAN.map((day, i) => {
     const done = completedDays.has(i);
     return `
       <div class="day-card${done ? ' done' : ''}" onclick="startDay(${i})">
         <div>
-          <div class="dc-day">${weekDays[i]} · ${day.label}</div>
           <div class="dc-name">${day.name}</div>
           <div class="dc-excount">${day.exercises.length} Übungen</div>
         </div>
@@ -502,6 +510,11 @@ function goBack() {
 
 function finishWorkout() {
   completedDays.add(currentDayIdx);
+  saveCompleted();
+  if (completedDays.size >= PLAN.length) {
+    completedDays.clear();
+    saveCompleted();
+  }
   let totalSets = 0, totalVol = 0;
   const totalEx = PLAN[currentDayIdx].exercises.length;
   sessionSets.forEach(exSets => exSets.forEach(s => {
