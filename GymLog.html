@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="GymLog">
+  <meta name="theme-color" content="#111111">
+  <title>GymLog</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    html, body { height: 100%; background: #111; overflow: hidden; }
+    :root {
+      --bg: #111;
+      --s1: #1c1c1e;
+      --s2: #2c2c2e;
+      --s3: #3a3a3c;
+      --text: #f2f2f7;
+      --text2: #8e8e93;
+      --text3: #48484a;
+      --accent: #a78bfa;
+      --accent-bg: rgba(167,139,250,0.15);
+      --green: #30d158;
+      --red: #ff453a;
+      --border: rgba(255,255,255,0.07);
+      --border2: rgba(255,255,255,0.13);
+      --r: 14px;
+      --r-sm: 8px;
+    }
+
+    .app {
+      width: 100%;
+      height: 100%;
+      max-width: 430px;
+      margin: 0 auto;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      color: var(--text);
+      font-size: 15px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── Status Bar ── */
+    .sb {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: env(safe-area-inset-top, 14px) 24px 0;
+      padding-top: max(env(safe-area-inset-top), 14px);
+      font-size: 15px;
+      font-weight: 600;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+    .sb-icons { display: flex; gap: 6px; align-items: center; }
+
+    /* ── Screens ── */
+    .screen {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      display: none;
+      flex-direction: column;
+      -webkit-overflow-scrolling: touch;
+    }
+    .screen.active { display: flex; }
+    .screen::-webkit-scrollbar { display: none; }
+
+    /* ── Bottom Nav ── */
+    .bnav {
+      display: flex;
+      background: var(--s1);
+      border-top: 0.5px solid var(--border);
+      padding: 10px 0;
+      padding-bottom: max(env(safe-area-inset-bottom), 16px);
+      flex-shrink: 0;
+    }
+    .ni {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      cursor: pointer;
+      padding: 4px 0;
+      color: var(--text3);
+      font-size: 10px;
+      border: none;
+      background: none;
+      -webkit-appearance: none;
+    }
+    .ni.active { color: var(--accent); }
+    .ni i { font-size: 22px; }
+
+    /* ── Splash ── */
+    .splash {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+    }
+    .splash-logo { font-size: 44px; font-weight: 600; letter-spacing: -1.5px; color: var(--text); }
+    .splash-sub { font-size: 18px; color: var(--text2); margin-top: 8px; }
+    .splash-bar-wrap { width: 120px; height: 2px; background: var(--s3); border-radius: 2px; margin-top: 52px; }
+    .splash-bar { height: 2px; border-radius: 2px; background: var(--accent); width: 0; transition: width 1.8s ease; }
+
+    /* ── Week Screen ── */
+    .week-content { padding: 0 20px 24px; }
+    .week-header { padding: 16px 0 20px; }
+    .week-title { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; }
+    .week-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
+    .week-kw { font-size: 12px; color: var(--accent); background: var(--accent-bg); padding: 3px 10px; border-radius: 10px; display: inline-block; margin-top: 8px; }
+
+    .day-card {
+      background: var(--s1);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r);
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+    .day-card:active { background: var(--s2); transform: scale(0.98); }
+    .day-card.done { border-color: rgba(48,209,88,0.3); }
+    .dc-day { font-size: 12px; color: var(--text2); margin-bottom: 4px; }
+    .dc-name { font-size: 19px; font-weight: 600; }
+    .dc-excount { font-size: 12px; color: var(--text2); margin-top: 4px; }
+    .dc-right { display: flex; align-items: center; gap: 10px; }
+    .dc-muscles { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+    .muscle-pill { font-size: 11px; color: var(--accent); background: var(--accent-bg); padding: 2px 8px; border-radius: 8px; }
+    .done-badge { width: 28px; height: 28px; border-radius: 50%; background: rgba(48,209,88,0.15); display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 16px; }
+
+    /* ── Exercise Screen ── */
+    .ex-screen { flex: 1; display: none; flex-direction: column; overflow: hidden; }
+    .ex-screen.active { display: flex; }
+    .ex-topbar { display: flex; align-items: center; gap: 12px; padding: 12px 20px 8px; flex-shrink: 0; }
+    .back-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--s2); border: none; color: var(--text); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; flex-shrink: 0; -webkit-appearance: none; }
+    .ex-dayname { font-size: 13px; color: var(--text2); }
+    .ex-progress-wrap { display: flex; gap: 3px; padding: 0 20px 14px; flex-shrink: 0; }
+    .ex-dot { flex: 1; height: 3px; border-radius: 2px; background: var(--s3); }
+    .ex-dot.done-dot { background: var(--green); }
+    .ex-dot.active-dot { background: var(--accent); }
+
+    .ex-body { flex: 1; overflow-y: auto; padding: 0 20px 12px; -webkit-overflow-scrolling: touch; }
+    .ex-body::-webkit-scrollbar { display: none; }
+    .ex-name-big { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .ex-muscle-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+    .ex-note { font-size: 13px; color: var(--text2); margin-bottom: 20px; line-height: 1.5; background: var(--s1); padding: 10px 12px; border-radius: var(--r-sm); border-left: 2px solid var(--accent); border-radius: 0; }
+
+    .sets-header { display: grid; grid-template-columns: 32px 1fr 1fr 44px; gap: 8px; margin-bottom: 6px; }
+    .sh-cell { font-size: 11px; color: var(--text3); text-align: center; }
+    .set-row { display: grid; grid-template-columns: 32px 1fr 1fr 44px; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .set-num { font-size: 13px; color: var(--text2); text-align: center; }
+    .set-inp {
+      background: var(--s2);
+      border: 0.5px solid var(--border2);
+      border-radius: var(--r-sm);
+      color: var(--text);
+      padding: 12px 6px;
+      text-align: center;
+      font-size: 16px;
+      width: 100%;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .set-inp:focus { outline: none; border-color: var(--accent); }
+    .chk {
+      width: 40px; height: 40px; border-radius: 50%;
+      border: 0.5px solid var(--border2); background: transparent;
+      color: var(--text3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+      -webkit-appearance: none;
+    }
+    .chk.on { background: var(--green); border-color: var(--green); color: #000; }
+    .add-set {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--text2); font-size: 14px; cursor: pointer;
+      padding: 12px 0; border-top: 0.5px dashed var(--border2); margin-top: 4px;
+    }
+
+    .ex-footer { padding: 12px 20px 0; flex-shrink: 0; }
+    .nav-btns { display: flex; gap: 10px; }
+    .nbtn {
+      flex: 1; padding: 16px; border-radius: var(--r); border: 0.5px solid var(--border2);
+      background: var(--s1); color: var(--text); font-size: 16px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      -webkit-appearance: none; font-weight: 500;
+    }
+    .nbtn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .nbtn.finish { background: var(--green); border-color: var(--green); color: #000; }
+    .nbtn:active { opacity: 0.8; transform: scale(0.98); }
+
+    /* ── Done Screen ── */
+    .done-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 24px; text-align: center; }
+    .done-icon { font-size: 60px; color: var(--green); margin-bottom: 20px; }
+    .done-title { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+    .done-sub { font-size: 15px; color: var(--text2); line-height: 1.5; }
+    .done-stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin: 28px 0; width: 100%; }
+    .dstat { background: var(--s1); border-radius: var(--r); padding: 16px; text-align: center; }
+    .dstat-val { font-size: 26px; font-weight: 600; }
+    .dstat-lbl { font-size: 12px; color: var(--text2); margin-top: 4px; }
+    .back-home-btn { width: 100%; padding: 16px; border-radius: var(--r); background: var(--accent); border: none; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; -webkit-appearance: none; }
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- Status Bar -->
+  <div class="sb">
+    <span id="sb-time">9:41</span>
+    <div class="sb-icons">
+      <i class="ti ti-wifi" aria-hidden="true" style="font-size:15px"></i>
+      <i class="ti ti-battery-2" aria-hidden="true" style="font-size:15px"></i>
+    </div>
+  </div>
+
+  <!-- Splash -->
+  <div class="screen active" id="scr-splash" style="justify-content:center;align-items:center;">
+    <div class="splash">
+      <div class="splash-logo">GymLog</div>
+      <div class="splash-sub">Hallo Nikolas!</div>
+      <div class="splash-bar-wrap"><div class="splash-bar" id="splash-bar"></div></div>
+    </div>
+  </div>
+
+  <!-- Week -->
+  <div class="screen" id="scr-week">
+    <div class="week-content">
+      <div class="week-header">
+        <div class="week-title">Diese Woche</div>
+        <div class="week-sub">Dein Trainingsplan</div>
+        <div class="week-kw" id="week-kw">KW — · —</div>
+      </div>
+      <div id="day-cards"></div>
+    </div>
+  </div>
+
+  <!-- Exercise Flow -->
+  <div class="screen" id="scr-exercise" style="overflow:hidden;">
+    <div class="ex-topbar">
+      <button class="back-btn" onclick="goBack()" aria-label="Zurück"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+      <div style="flex:1">
+        <div class="ex-dayname" id="ex-dayname"></div>
+      </div>
+      <div style="font-size:13px;color:var(--text2)" id="ex-counter"></div>
+    </div>
+    <div class="ex-progress-wrap" id="ex-dots"></div>
+    <div class="ex-body" id="ex-body"></div>
+    <div class="ex-footer">
+      <div class="nav-btns">
+        <button class="nbtn" id="btn-prev" onclick="prevEx()"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+        <button class="nbtn primary" id="btn-next" onclick="nextEx()">Weiter <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done -->
+  <div class="screen" id="scr-done">
+    <div class="done-screen">
+      <i class="ti ti-circle-check done-icon" aria-hidden="true"></i>
+      <div class="done-title" id="done-title">Workout done!</div>
+      <div class="done-sub">Starke Session, Nikolas.</div>
+      <div class="done-stats">
+        <div class="dstat"><div class="dstat-val" id="ds-sets">0</div><div class="dstat-lbl">Sets</div></div>
+        <div class="dstat"><div class="dstat-val" id="ds-vol">0</div><div class="dstat-lbl">kg Volumen</div></div>
+        <div class="dstat"><div class="dstat-val" id="ds-ex">0</div><div class="dstat-lbl">Übungen</div></div>
+        <div class="dstat"><div class="dstat-val" id="ds-time">—</div><div class="dstat-lbl">Minuten</div></div>
+      </div>
+      <button class="back-home-btn" onclick="showWeek()">Zurück zur Übersicht</button>
+    </div>
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bnav" id="bottom-nav" style="display:none">
+    <button class="ni active" id="ni-week" onclick="showWeek()">
+      <i class="ti ti-calendar-week" aria-hidden="true"></i>Woche
+    </button>
+    <button class="ni" id="ni-stats">
+      <i class="ti ti-chart-bar" aria-hidden="true"></i>Stats
+    </button>
+    <button class="ni" id="ni-hist">
+      <i class="ti ti-history" aria-hidden="true"></i>Verlauf
+    </button>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────
+// TRAININGSPLAN — diesen Block anpassen
+// ─────────────────────────────────────────────────────────
+const PLAN = [
+  {
+    label: "Tag 1", name: "Push",
+    muscles: ["Brust", "Schulter", "Trizeps"],
+    exercises: [
+      { name: "Bankdrücken", muscle: "Brust", note: "Schulterbreiter Griff, kontrolliert absenken", sets: [{kg:82.5,reps:8},{kg:82.5,reps:8},{kg:80,reps:8},{kg:77.5,reps:8}] },
+      { name: "Schrägbank Drücken", muscle: "Brust", note: "30° Neigung, volle Bewegungsamplitude", sets: [{kg:62.5,reps:10},{kg:62.5,reps:10},{kg:60,reps:10}] },
+      { name: "Schulterdrücken", muscle: "Schulter", note: "Stehend oder sitzend, Ellbogen leicht vorne", sets: [{kg:52.5,reps:8},{kg:52.5,reps:8},{kg:50,reps:8},{kg:50,reps:8}] },
+      { name: "Seitheben", muscle: "Schulter", note: "Leicht gebeugte Arme, kontrolliert absenken", sets: [{kg:13,reps:15},{kg:12,reps:15},{kg:12,reps:15}] },
+      { name: "Trizeps Pushdown", muscle: "Trizeps", note: "Kabel, Seil-Aufsatz, Ellbogen am Körper", sets: [{kg:37.5,reps:12},{kg:35,reps:12},{kg:35,reps:12}] },
+    ]
+  },
+  {
+    label: "Tag 2", name: "Pull",
+    muscles: ["Rücken", "Bizeps"],
+    exercises: [
+      { name: "Klimmzüge", muscle: "Rücken", note: "Weiter Griff, volle Streckung unten", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:7},{kg:0,reps:6}] },
+      { name: "LH-Rudern", muscle: "Rücken", note: "Rücken gerade, Stange zur Hüfte ziehen", sets: [{kg:72.5,reps:8},{kg:72.5,reps:8},{kg:70,reps:8},{kg:70,reps:8}] },
+      { name: "Latzug", muscle: "Rücken", note: "Schulterbreiter Griff, Brust rausstrecken", sets: [{kg:67.5,reps:10},{kg:65,reps:10},{kg:65,reps:10}] },
+      { name: "Gesichtszüge", muscle: "Schulter", note: "Kabel auf Augenhöhe, nach außen drehen", sets: [{kg:22.5,reps:15},{kg:20,reps:15},{kg:20,reps:15}] },
+      { name: "Bizepscurl", muscle: "Bizeps", note: "LH oder KH, keine Schwungbewegung", sets: [{kg:32.5,reps:12},{kg:30,reps:12},{kg:30,reps:12}] },
+    ]
+  },
+  {
+    label: "Tag 3", name: "Legs",
+    muscles: ["Quadrizeps", "Hamstrings", "Waden"],
+    exercises: [
+      { name: "Kniebeugen", muscle: "Quadrizeps", note: "Schulterbreit, Knie über Zehen, tief squatten", sets: [{kg:102.5,reps:6},{kg:102.5,reps:6},{kg:100,reps:6},{kg:100,reps:6}] },
+      { name: "Beinpresse", muscle: "Quadrizeps", note: "Füße schulterbreit, tiefe Position", sets: [{kg:142.5,reps:10},{kg:140,reps:10},{kg:140,reps:10}] },
+      { name: "Romanian Deadlift", muscle: "Hamstrings", note: "Rücken gerade, Stange am Bein entlang", sets: [{kg:82.5,reps:8},{kg:82.5,reps:8},{kg:80,reps:8},{kg:80,reps:8}] },
+      { name: "Beinbeuger", muscle: "Hamstrings", note: "Maschine, langsam und kontrolliert absenken", sets: [{kg:52.5,reps:12},{kg:50,reps:12},{kg:50,reps:12}] },
+      { name: "Wadenheben", muscle: "Waden", note: "Langsam mit voller Dehnung unten", sets: [{kg:62.5,reps:15},{kg:62.5,reps:15},{kg:60,reps:15},{kg:60,reps:15}] },
+    ]
+  },
+  {
+    label: "Tag 4", name: "Upper",
+    muscles: ["Brust", "Rücken", "Schulter"],
+    exercises: [
+      { name: "KH-Bankdrücken", muscle: "Brust", note: "Kurzhanteln, maximale Dehnung unten", sets: [{kg:32.5,reps:10},{kg:32.5,reps:10},{kg:30,reps:10}] },
+      { name: "Einarmiges Rudern", muscle: "Rücken", note: "Bank als Stütze, volle Streckung", sets: [{kg:37.5,reps:10},{kg:37.5,reps:10},{kg:35,reps:10}] },
+      { name: "Arnold Press", muscle: "Schulter", note: "Rotation während der Aufwärtsbewegung", sets: [{kg:22.5,reps:10},{kg:22.5,reps:10},{kg:20,reps:10}] },
+      { name: "Butterfly", muscle: "Brust", note: "Maschine, kontrollierte Bewegung", sets: [{kg:47.5,reps:12},{kg:45,reps:12},{kg:45,reps:12}] },
+      { name: "Schulterpresse Maschine", muscle: "Schulter", note: "Ellbogen auf 90°, nicht überstrecken", sets: [{kg:42.5,reps:12},{kg:40,reps:12},{kg:40,reps:12}] },
+    ]
+  },
+];
+// ─────────────────────────────────────────────────────────
+
+const completedDays = new Set();
+let currentDayIdx = 0;
+let currentExIdx = 0;
+let sessionSets = [];
+let startTime = null;
+
+function getWeekNumber(d) {
+  const date = new Date(d);
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
+  const week1 = new Date(date.getFullYear(), 0, 4);
+  return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+}
+
+function initClock() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('sb-time').textContent = h + ':' + m;
+  const kw = getWeekNumber(now);
+  const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  document.getElementById('week-kw').textContent = `KW ${kw} · ${months[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const showNav = (id !== 'scr-splash');
+  document.getElementById('bottom-nav').style.display = showNav ? 'flex' : 'none';
+}
+
+function showWeek() {
+  showScreen('scr-week');
+  renderDayCards();
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('ni-week').classList.add('active');
+}
+
+function renderDayCards() {
+  const weekDays = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+  document.getElementById('day-cards').innerHTML = PLAN.map((day, i) => {
+    const done = completedDays.has(i);
+    return `
+      <div class="day-card${done ? ' done' : ''}" onclick="startDay(${i})">
+        <div>
+          <div class="dc-day">${weekDays[i]} · ${day.label}</div>
+          <div class="dc-name">${day.name}</div>
+          <div class="dc-excount">${day.exercises.length} Übungen</div>
+        </div>
+        <div class="dc-right">
+          <div class="dc-muscles">${day.muscles.slice(0,2).map(m=>`<span class="muscle-pill">${m}</span>`).join('')}</div>
+          ${done
+            ? '<div class="done-badge"><i class="ti ti-check" aria-hidden="true"></i></div>'
+            : '<i class="ti ti-chevron-right" aria-hidden="true" style="font-size:18px;color:var(--text3)"></i>'
+          }
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function startDay(idx) {
+  currentDayIdx = idx;
+  currentExIdx = 0;
+  startTime = Date.now();
+  const day = PLAN[idx];
+  sessionSets = day.exercises.map(ex =>
+    ex.sets.map(s => ({ kg: s.kg, reps: s.reps, done: false }))
+  );
+  showScreen('scr-exercise');
+  renderExercise();
+}
+
+function renderExercise() {
+  const day = PLAN[currentDayIdx];
+  const ex = day.exercises[currentExIdx];
+  const sets = sessionSets[currentExIdx];
+  const total = day.exercises.length;
+
+  document.getElementById('ex-dayname').textContent = day.name + ' · ' + day.label;
+  document.getElementById('ex-counter').textContent = `${currentExIdx + 1} / ${total}`;
+
+  document.getElementById('ex-dots').innerHTML = Array.from({length: total}, (_, i) =>
+    `<div class="ex-dot${i < currentExIdx ? ' done-dot' : i === currentExIdx ? ' active-dot' : ''}"></div>`
+  ).join('');
+
+  const setRows = sets.map((s, i) => `
+    <div class="set-row">
+      <div class="set-num">${i + 1}</div>
+      <input class="set-inp" type="number" inputmode="decimal" value="${s.kg}" min="0" step="2.5"
+        onchange="updSet(${i},'kg',this.value)">
+      <input class="set-inp" type="number" inputmode="numeric" value="${s.reps}" min="1" step="1"
+        onchange="updSet(${i},'reps',this.value)">
+      <button class="chk${s.done ? ' on' : ''}" onclick="togSet(${i})" aria-label="Set erledigt">
+        <i class="ti ti-check" aria-hidden="true"></i>
+      </button>
+    </div>`).join('');
+
+  document.getElementById('ex-body').innerHTML = `
+    <div style="margin-bottom:8px">
+      <div class="ex-name-big">${ex.name}</div>
+      <div class="ex-muscle-row"><span class="muscle-pill">${ex.muscle}</span></div>
+      <div class="ex-note">${ex.note}</div>
+    </div>
+    <div class="sets-header">
+      <div class="sh-cell">Set</div>
+      <div class="sh-cell">kg</div>
+      <div class="sh-cell">Wdh</div>
+      <div class="sh-cell"></div>
+    </div>
+    ${setRows}
+    <div class="add-set" onclick="addSet()">
+      <i class="ti ti-plus" aria-hidden="true" style="font-size:16px"></i> Set hinzufügen
+    </div>`;
+
+  const isLast = currentExIdx === total - 1;
+  const prevBtn = document.getElementById('btn-prev');
+  const nextBtn = document.getElementById('btn-next');
+  prevBtn.style.display = currentExIdx === 0 ? 'none' : 'flex';
+  nextBtn.className = `nbtn ${isLast ? 'finish' : 'primary'}`;
+  nextBtn.innerHTML = isLast
+    ? 'Fertig <i class="ti ti-circle-check" aria-hidden="true"></i>'
+    : 'Weiter <i class="ti ti-arrow-right" aria-hidden="true"></i>';
+}
+
+function updSet(i, field, val) {
+  sessionSets[currentExIdx][i][field] = parseFloat(val) || 0;
+}
+
+function togSet(i) {
+  sessionSets[currentExIdx][i].done = !sessionSets[currentExIdx][i].done;
+  renderExercise();
+}
+
+function addSet() {
+  const last = sessionSets[currentExIdx].slice(-1)[0];
+  sessionSets[currentExIdx].push({ kg: last.kg, reps: last.reps, done: false });
+  renderExercise();
+}
+
+function prevEx() {
+  if (currentExIdx > 0) { currentExIdx--; renderExercise(); }
+}
+
+function nextEx() {
+  const total = PLAN[currentDayIdx].exercises.length;
+  if (currentExIdx < total - 1) {
+    currentExIdx++;
+    renderExercise();
+  } else {
+    finishWorkout();
+  }
+}
+
+function goBack() {
+  showWeek();
+}
+
+function finishWorkout() {
+  completedDays.add(currentDayIdx);
+  let totalSets = 0, totalVol = 0;
+  const totalEx = PLAN[currentDayIdx].exercises.length;
+  sessionSets.forEach(exSets => exSets.forEach(s => {
+    if (s.done) { totalSets++; totalVol += s.kg * s.reps; }
+  }));
+  const mins = startTime ? Math.round((Date.now() - startTime) / 60000) : '—';
+  document.getElementById('ds-sets').textContent = totalSets;
+  document.getElementById('ds-vol').textContent = totalVol.toLocaleString('de-DE');
+  document.getElementById('ds-ex').textContent = totalEx;
+  document.getElementById('ds-time').textContent = mins;
+  document.getElementById('done-title').textContent = PLAN[currentDayIdx].name + ' — Done!';
+  showScreen('scr-done');
+}
+
+// Init
+initClock();
+setInterval(initClock, 30000);
+
+setTimeout(() => {
+  document.getElementById('splash-bar').style.width = '100%';
+}, 100);
+setTimeout(() => {
+  showWeek();
+}, 2300);
+</script>
+</body>
+</html>
