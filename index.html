@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GymLog">
@@ -100,10 +100,9 @@
 
     /* ── Week Screen ── */
     .week-content { padding: 0 20px 24px; }
-    .week-header { padding: 16px 0 20px; }
-    .week-title { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; }
-    .week-sub { font-size: 14px; color: var(--text2); margin-top: 4px; }
-    .week-kw { font-size: 12px; color: var(--accent); background: var(--accent-bg); padding: 3px 10px; border-radius: 10px; display: inline-block; margin-top: 8px; }
+    .week-header { padding: 20px 0 20px; }
+    .week-title { font-size: 30px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 4px; }
+    .week-sub { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
 
     .day-card {
       background: var(--s1);
@@ -125,7 +124,7 @@
     .dc-right { display: flex; align-items: center; gap: 10px; }
     .dc-muscles { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
     .muscle-pill { font-size: 11px; color: var(--accent); background: var(--accent-bg); padding: 2px 8px; border-radius: 8px; }
-    .done-badge { width: 28px; height: 28px; border-radius: 50%; background: rgba(48,209,88,0.15); display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 16px; }
+    .done-badge { width: 28px; height: 28px; border-radius: 50%; background: rgba(200,240,0,0.15); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 16px; }
 
     /* ── Exercise Screen ── */
     .ex-screen { flex: 1; display: none; flex-direction: column; overflow: hidden; }
@@ -138,7 +137,7 @@
     .ex-dot.done-dot { background: var(--green); }
     .ex-dot.active-dot { background: var(--accent); }
 
-    .ex-body { flex: 1; overflow-y: auto; padding: 0 20px 12px; -webkit-overflow-scrolling: touch; }
+    .ex-body { flex: 1; overflow-y: auto; padding: 0 20px 12px; -webkit-overflow-scrolling: touch; min-height: 0; }
     .ex-body::-webkit-scrollbar { display: none; }
     .ex-name-big { font-size: 26px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 4px; }
     .ex-muscle-row { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
@@ -172,7 +171,7 @@
     .rpe-wrap { display: flex; gap: 8px; margin-top: 16px; }
     .rpe-btn { flex: 1; padding: 10px 4px; border-radius: var(--r-sm); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); font-size: 13px; cursor: pointer; -webkit-appearance: none; }
     .rpe-btn.selected-easy { background: rgba(48,209,88,0.15); border-color: var(--green); color: var(--green); }
-    .rpe-btn.selected-right { background: rgba(167,139,250,0.15); border-color: var(--accent); color: var(--accent); }
+    .rpe-btn.selected-right { background: rgba(48,209,88,0.15); border-color: var(--green); color: var(--green); }
     .rpe-btn.selected-hard { background: rgba(255,69,58,0.15); border-color: var(--red); color: var(--red); }
     .rpe-last { font-size: 12px; color: var(--text2); margin-top: 14px; margin-bottom: -4px; }
     .rpe-last span { font-weight: 500; }
@@ -213,6 +212,8 @@
     .log-wrap { position: relative; margin-bottom: 10px; overflow: hidden; border-radius: var(--r); }
     .log-entry { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--s1); border: 0.5px solid var(--border2); border-radius: var(--r); position: relative; transition: transform 0.2s ease; touch-action: pan-y; }
     .log-delete-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; border-radius: var(--r); }
+    .log-entry.swiped { transform: translateX(-88px); }
+    .log-delete-bg { position: absolute; right: 8px; top: 8px; bottom: 8px; width: 72px; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; border-radius: var(--r-sm); }
     .log-date { font-size: 12px; color: var(--text2); margin-bottom: 3px; }
     .log-plan { font-size: 16px; font-weight: 500; }
     .log-check { width: 28px; height: 28px; border-radius: 50%; background: rgba(48,209,88,0.15); display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 16px; flex-shrink: 0; }
@@ -224,8 +225,7 @@
   <!-- Splash -->
   <div class="screen active" id="scr-splash" style="justify-content:center;align-items:center;">
     <div class="splash">
-      <div class="splash-logo">GymLog</div>
-      <div class="splash-sub">Hallo Nikolas!</div>
+      <div class="splash-logo">Hi Nikolas!</div>
       <div class="splash-bar-wrap"><div class="splash-bar" id="splash-bar"></div></div>
     </div>
   </div>
@@ -235,8 +235,7 @@
     <div class="week-content">
       <div class="week-header">
         <div class="week-title">Diese Woche</div>
-        <div class="week-sub">Dein Trainingsplan</div>
-        <div class="week-kw" id="week-kw">KW — · —</div>
+        <div class="week-sub">Dein Trainingsplan · <span id="week-kw"></span></div>
       </div>
       <div id="day-cards"></div>
     </div>
@@ -383,7 +382,8 @@ function initWeekLabel() {
   const now = new Date();
   const kw = getWeekNumber(now);
   const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  document.getElementById('week-kw').textContent = `KW ${kw} · ${months[now.getMonth()]} ${now.getFullYear()}`;
+  const el = document.getElementById('week-kw');
+  if (el) el.textContent = `KW ${kw} · ${months[now.getMonth()]} ${now.getFullYear()}`;
 }
 
 function showScreen(id) {
@@ -572,11 +572,11 @@ function initSwipe(idx) {
   }, { passive: true });
   el.addEventListener('touchmove', e => {
     curX = e.touches[0].clientX - startX;
-    if (curX < 0) el.style.transform = `translateX(${Math.max(curX, -80)}px)`;
+    if (curX < 0) el.style.transform = `translateX(${Math.max(curX, -88)}px)`;
   }, { passive: true });
   el.addEventListener('touchend', () => {
     if (curX < -50) {
-      el.style.transform = 'translateX(-80px)';
+      el.style.transform = 'translateX(-88px)';
       swiped = true;
     } else {
       el.style.transform = 'translateX(0)';
@@ -810,6 +810,14 @@ function finishWorkout() {
 
 // Init
 initWeekLabel();
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', () => {
+    const footer = document.getElementById('ex-footer-el');
+    if (!footer) return;
+    const keyboardH = window.innerHeight - window.visualViewport.height;
+    footer.style.paddingBottom = keyboardH > 50 ? '16px' : '16px';
+  });
+}
 setTimeout(() => {
   document.getElementById('splash-bar').style.width = '100%';
 }, 100);
