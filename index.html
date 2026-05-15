@@ -45,19 +45,8 @@
       overflow: hidden;
     }
 
-    /* ── Status Bar ── */
-    .sb {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: env(safe-area-inset-top, 14px) 24px 0;
-      padding-top: max(env(safe-area-inset-top), 14px);
-      font-size: 15px;
-      font-weight: 600;
-      flex-shrink: 0;
-      background: var(--bg);
-    }
-    .sb-icons { display: flex; gap: 6px; align-items: center; }
+    /* safe area top padding for notch/dynamic island */
+    .app { padding-top: env(safe-area-inset-top); }
 
     /* ── Screens ── */
     .screen {
@@ -215,15 +204,6 @@
 </head>
 <body>
 <div class="app" id="app">
-
-  <!-- Status Bar -->
-  <div class="sb">
-    <span id="sb-time">9:41</span>
-    <div class="sb-icons">
-      <i class="ti ti-wifi" aria-hidden="true" style="font-size:15px"></i>
-      <i class="ti ti-battery-2" aria-hidden="true" style="font-size:15px"></i>
-    </div>
-  </div>
 
   <!-- Splash -->
   <div class="screen active" id="scr-splash" style="justify-content:center;align-items:center;">
