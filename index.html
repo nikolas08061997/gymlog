@@ -45,9 +45,6 @@
       overflow: hidden;
     }
 
-    /* safe area top padding for notch/dynamic island */
-    .app { padding-top: env(safe-area-inset-top); }
-
     /* ── Screens ── */
     .screen {
       flex: 1;
@@ -56,6 +53,7 @@
       display: none;
       flex-direction: column;
       -webkit-overflow-scrolling: touch;
+      padding-top: env(safe-area-inset-top);
     }
     .screen.active { display: flex; }
     .screen::-webkit-scrollbar { display: none; }
@@ -341,11 +339,8 @@ function getWeekNumber(d) {
   return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
-function initClock() {
+function initWeekLabel() {
   const now = new Date();
-  const h = now.getHours().toString().padStart(2,'0');
-  const m = now.getMinutes().toString().padStart(2,'0');
-  document.getElementById('sb-time').textContent = h + ':' + m;
   const kw = getWeekNumber(now);
   const months = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   document.getElementById('week-kw').textContent = `KW ${kw} · ${months[now.getMonth()]} ${now.getFullYear()}`;
@@ -501,9 +496,7 @@ function finishWorkout() {
 }
 
 // Init
-initClock();
-setInterval(initClock, 30000);
-
+initWeekLabel();
 setTimeout(() => {
   document.getElementById('splash-bar').style.width = '100%';
 }, 100);
