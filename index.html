@@ -171,7 +171,7 @@
     .chk.on { background: var(--green); border-color: var(--green); color: #000; }
     .rpe-wrap { display: flex; gap: 8px; margin-top: 16px; }
     .rpe-btn { flex: 1; padding: 10px 4px; border-radius: var(--r-sm); border: 0.5px solid var(--border2); background: transparent; color: var(--text2); font-size: 13px; cursor: pointer; -webkit-appearance: none; }
-    .rpe-btn.selected-easy { background: rgba(48,209,88,0.15); border-color: var(--green); color: var(--green); }
+    .rpe-btn.selected-easy { background: rgba(255,214,10,0.15); border-color: #ffd60a; color: #ffd60a; }
     .rpe-btn.selected-right { background: rgba(48,209,88,0.15); border-color: var(--green); color: var(--green); }
     .rpe-btn.selected-hard { background: rgba(255,69,58,0.15); border-color: var(--red); color: var(--red); }
     .rpe-last { font-size: 12px; color: var(--text2); margin-top: 14px; margin-bottom: -4px; }
@@ -497,7 +497,7 @@ function drawChart(canvas, entries) {
   const cH = H - pad.top - pad.bottom;
 
   const kgs = shown.map(e => e.avgKg);
-  const labels = shown.map(e => 'KW' + e.kw);
+  const labels = shown.map(e => e.date || 'KW' + e.kw);
 
   const minKg = Math.min(...kgs);
   const maxKg = Math.max(...kgs);
@@ -920,7 +920,8 @@ function finishWorkout() {
     const avgReps = doneSets.reduce((a, s) => a + s.reps, 0) / doneSets.length;
     if (!history[ex.name]) history[ex.name] = [];
     const existing = history[ex.name].findIndex(e => e.kw === kw);
-    const entry = { kw, avgKg: Math.round(avgKg * 10) / 10, avgReps: Math.round(avgReps * 10) / 10 };
+    const dateLabel = sessionDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
+    const entry = { kw, date: dateLabel, avgKg: Math.round(avgKg * 10) / 10, avgReps: Math.round(avgReps * 10) / 10 };
     if (existing >= 0) history[ex.name][existing] = entry;
     else history[ex.name].push(entry);
     history[ex.name] = history[ex.name].slice(-12);
