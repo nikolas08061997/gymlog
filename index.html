@@ -6,6 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="GymLog">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="theme-color" content="#111111">
   <title>GymLog</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
@@ -211,9 +212,8 @@
     .no-data { font-size: 13px; color: var(--text3); padding: 8px 0; }
     .log-wrap { position: relative; margin-bottom: 10px; overflow: hidden; border-radius: var(--r); }
     .log-entry { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: var(--s1); border: 0.5px solid var(--border2); border-radius: var(--r); position: relative; transition: transform 0.2s ease; touch-action: pan-y; }
-    .log-delete-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; border-radius: var(--r); }
+    .log-delete-bg { position: absolute; right: 0; top: 0; bottom: 0; width: 80px; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; }
     .log-entry.swiped { transform: translateX(-88px); }
-    .log-delete-bg { position: absolute; right: 8px; top: 8px; bottom: 8px; width: 72px; background: var(--red); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 13px; border-radius: var(--r-sm); }
     .log-date { font-size: 12px; color: var(--text2); margin-bottom: 3px; }
     .log-plan { font-size: 16px; font-weight: 500; }
     .log-check { width: 28px; height: 28px; border-radius: 50%; background: rgba(48,209,88,0.15); display: flex; align-items: center; justify-content: center; color: var(--green); font-size: 16px; flex-shrink: 0; }
@@ -225,6 +225,7 @@
   <!-- Splash -->
   <div class="screen active" id="scr-splash" style="justify-content:center;align-items:center;">
     <div class="splash">
+      <i class="ti ti-barbell" style="font-size:52px;color:var(--accent);margin-bottom:16px;"></i>
       <div class="splash-logo">Hi Nikolas!</div>
       <div class="splash-bar-wrap"><div class="splash-bar" id="splash-bar"></div></div>
     </div>
@@ -234,15 +235,16 @@
   <div class="screen" id="scr-week">
     <div class="week-content">
       <div class="week-header">
-        <div class="week-title">Diese Woche</div>
+        <div class="week-title">Training</div>
         <div class="week-sub">Dein Trainingsplan</div>
       </div>
+      <div id="cal-wrap"></div>
       <div id="day-cards"></div>
     </div>
   </div>
 
   <!-- Exercise Flow -->
-  <div class="screen" id="scr-exercise" style="overflow:hidden;">
+  <div class="screen" id="scr-exercise" style="overflow:hidden;position:relative;">
     <div class="ex-topbar">
       <button class="back-btn" onclick="goBack()" aria-label="Zurück"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
       <div style="flex:1">
@@ -255,8 +257,18 @@
     <div class="ex-footer">
       <div class="nav-btns">
         <button class="nbtn" id="btn-prev" onclick="prevEx()"><i class="ti ti-arrow-left" aria-hidden="true"></i></button>
+        <button class="nbtn" id="btn-overview" onclick="showExOverview()" style="flex:0.6;"><i class="ti ti-list" aria-hidden="true"></i></button>
         <button class="nbtn primary" id="btn-next" onclick="nextEx()">Weiter <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
       </div>
+    </div>
+
+    <!-- Exercise Overview Overlay -->
+    <div id="ex-overview" style="display:none;position:absolute;inset:0;background:var(--bg);z-index:10;flex-direction:column;padding-top:env(safe-area-inset-top);">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 20px 16px;flex-shrink:0;">
+        <button onclick="hideExOverview()" class="back-btn"><i class="ti ti-x" aria-hidden="true"></i></button>
+        <div style="font-size:17px;font-weight:600;">Übungen</div>
+      </div>
+      <div id="ex-overview-list" style="flex:1;overflow-y:auto;padding:0 20px 24px;-webkit-overflow-scrolling:touch;"></div>
     </div>
   </div>
 
@@ -310,7 +322,7 @@
   <!-- Bottom Nav -->
   <div class="bnav" id="bottom-nav" style="display:none">
     <button class="ni active" id="ni-week" onclick="showWeek()">
-      <i class="ti ti-calendar-week" aria-hidden="true"></i>Woche
+      <i class="ti ti-barbell" aria-hidden="true"></i>Training
     </button>
     <button class="ni" id="ni-stats" onclick="showStats()">
       <i class="ti ti-chart-bar" aria-hidden="true"></i>Stats
@@ -470,7 +482,8 @@ function drawChart(canvas, entries) {
   const shown = entries.slice(-5);
   const n = shown.length;
   const dpr = window.devicePixelRatio || 1;
-  const W = canvas.offsetWidth || canvas.parentElement.clientWidth - 28;
+  canvas.style.width = '100%';
+  const W = canvas.offsetWidth;
   const H = 120;
   canvas.width = W * dpr;
   canvas.height = H * dpr;
@@ -615,8 +628,73 @@ function deleteLogEntry(idx) {
   renderLog();
 }
 
+let calOffset = 0;
+
+function getTrainedDays(year, month) {
+  const trained = new Set();
+  loadLog().forEach(entry => {
+    const m = entry.date.match(/(\d{2})\.(\d{2})\.(\d{4})/);
+    if (!m) return;
+    const day = parseInt(m[1]), mo = parseInt(m[2]) - 1, yr = parseInt(m[3]);
+    if (mo === month && yr === year) trained.add(day);
+  });
+  return trained;
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const base = new Date(now.getFullYear(), now.getMonth() + calOffset, 1);
+  const year = base.getFullYear();
+  const month = base.getMonth();
+  const today = calOffset === 0 ? now.getDate() : -1;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const startDow = (new Date(year, month, 1).getDay() + 6) % 7;
+  const trained = getTrainedDays(year, month);
+  const monthNames = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+  const dayHeaders = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+
+  const cells = Array(startDow).fill(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(d);
+
+  const cellsHtml = cells.map(d => {
+    if (!d) return '<div></div>';
+    if (trained.has(d)) {
+      return `<div style="display:flex;align-items:center;justify-content:center;">
+        <div style="width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;">
+          <i class="ti ti-check" style="font-size:13px;color:#fff;"></i>
+        </div>
+      </div>`;
+    }
+    const isToday = d === today;
+    return `<div style="display:flex;align-items:center;justify-content:center;">
+      <div style="width:28px;height:28px;border-radius:50%;${isToday ? 'background:var(--s2);' : ''}display:flex;align-items:center;justify-content:center;">
+        <span style="font-size:13px;color:${isToday ? 'var(--text)' : 'var(--text3)'};">${d}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('cal-wrap').innerHTML = `
+    <div style="margin-bottom:28px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <button onclick="calNav(-1)" style="background:none;border:none;color:var(--text2);cursor:pointer;padding:0;font-size:18px;display:flex;align-items:center;"><i class="ti ti-chevron-left"></i></button>
+        <span style="font-size:13px;color:var(--text2);">${monthNames[month]} ${year}</span>
+        <button onclick="calNav(1)" style="background:none;border:none;color:var(--text2);cursor:pointer;padding:0;font-size:18px;display:flex;align-items:center;"><i class="ti ti-chevron-right"></i></button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;">
+        ${dayHeaders.map(d => `<div style="font-size:10px;color:var(--text3);padding-bottom:8px;">${d}</div>`).join('')}
+        ${cellsHtml}
+      </div>
+    </div>`;
+}
+
+function calNav(dir) {
+  calOffset += dir;
+  renderCalendar();
+}
+
 function showWeek() {
   showScreen('scr-week');
+  renderCalendar();
   renderDayCards();
   document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
   document.getElementById('ni-week').classList.add('active');
@@ -736,7 +814,8 @@ function renderExercise() {
   const isLast = currentExIdx === total - 1;
   const prevBtn = document.getElementById('btn-prev');
   const nextBtn = document.getElementById('btn-next');
-  prevBtn.style.display = currentExIdx === 0 ? 'none' : 'flex';
+  prevBtn.style.opacity = currentExIdx === 0 ? '0.25' : '1';
+  prevBtn.style.pointerEvents = currentExIdx === 0 ? 'none' : 'auto';
   nextBtn.className = `nbtn ${isLast ? 'finish' : 'primary'}`;
   nextBtn.innerHTML = isLast
     ? 'Fertig <i class="ti ti-circle-check" aria-hidden="true"></i>'
@@ -773,6 +852,32 @@ function setRpe(val) {
   const exName = PLAN[currentDayIdx].exercises[currentExIdx].name;
   sessionSets[currentExIdx].forEach(s => s.rpe = val);
   saveRpe(exName, val);
+  renderExercise();
+}
+
+function showExOverview() {
+  const day = PLAN[currentDayIdx];
+  document.getElementById('ex-overview-list').innerHTML = day.exercises.map((ex, i) => {
+    const allDone = sessionSets[i] && sessionSets[i].every(s => s.done);
+    const isCurrent = i === currentExIdx;
+    return `<div onclick="jumpToEx(${i})" style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:${isCurrent ? 'var(--accent-bg)' : 'var(--s1)'};border:0.5px solid ${isCurrent ? 'var(--accent)' : 'var(--border2)'};border-radius:var(--r);margin-bottom:10px;cursor:pointer;">
+      <div>
+        <div style="font-size:16px;font-weight:500;color:${isCurrent ? 'var(--accent)' : 'var(--text)'};">${ex.name}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:3px;">${ex.muscle} · ${ex.sets.length} Sets</div>
+      </div>
+      ${allDone ? '<i class="ti ti-circle-check" style="font-size:20px;color:var(--green);flex-shrink:0;"></i>' : isCurrent ? '<i class="ti ti-circle-dot" style="font-size:20px;color:var(--accent);flex-shrink:0;"></i>' : '<i class="ti ti-circle" style="font-size:20px;color:var(--text3);flex-shrink:0;"></i>'}
+    </div>`;
+  }).join('');
+  document.getElementById('ex-overview').style.display = 'flex';
+}
+
+function hideExOverview() {
+  document.getElementById('ex-overview').style.display = 'none';
+}
+
+function jumpToEx(idx) {
+  currentExIdx = idx;
+  hideExOverview();
   renderExercise();
 }
 
