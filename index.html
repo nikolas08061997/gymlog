@@ -919,11 +919,9 @@ function finishWorkout() {
     const avgKg = doneSets.reduce((a, s) => a + s.kg, 0) / doneSets.length;
     const avgReps = doneSets.reduce((a, s) => a + s.reps, 0) / doneSets.length;
     if (!history[ex.name]) history[ex.name] = [];
-    const existing = history[ex.name].findIndex(e => e.kw === kw);
     const dateLabel = sessionDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
     const entry = { kw, date: dateLabel, avgKg: Math.round(avgKg * 10) / 10, avgReps: Math.round(avgReps * 10) / 10 };
-    if (existing >= 0) history[ex.name][existing] = entry;
-    else history[ex.name].push(entry);
+    history[ex.name].push(entry);
     history[ex.name] = history[ex.name].slice(-12);
   });
   saveHistory(history);
