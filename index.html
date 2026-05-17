@@ -161,6 +161,7 @@
       appearance: none;
     }
     .set-inp:focus { outline: none; border-color: var(--accent); }
+    .comment-inp:focus { outline: none; border-color: var(--accent); }
     .chk {
       width: 40px; height: 40px; border-radius: 50%;
       border: 0.5px solid var(--border2); background: transparent;
@@ -443,12 +444,20 @@ function renderStats() {
   });
 
   const container = document.getElementById('stats-content');
+  const toggle = `
+    <div style="display:flex;background:var(--s2);border-radius:var(--r-sm);padding:3px;margin-bottom:20px;">
+      <button onclick="setStatsMode('kg')" style="flex:1;padding:9px;border-radius:6px;border:none;background:${statsMode==='kg'?'var(--accent)':'transparent'};color:${statsMode==='kg'?'#fff':'var(--text2)'};font-size:14px;font-weight:${statsMode==='kg'?'600':'400'};cursor:pointer;-webkit-appearance:none;">Gewicht</button>
+      <button onclick="setStatsMode('reps')" style="flex:1;padding:9px;border-radius:6px;border:none;background:${statsMode==='reps'?'var(--accent)':'transparent'};color:${statsMode==='reps'?'#fff':'var(--text2)'};font-size:14px;font-weight:${statsMode==='reps'?'600':'400'};cursor:pointer;-webkit-appearance:none;">Wiederholungen</button>
+    </div>`;
+
   if (Object.keys(history).length === 0) {
-    container.innerHTML = '<div class="no-data">Noch keine Daten — absolviere dein erstes Training um den Verlauf zu sehen.</div>';
+    container.innerHTML = toggle + '<div class="no-data">Noch keine Daten — absolviere dein erstes Training um den Verlauf zu sehen.</div>';
     return;
   }
 
-  container.innerHTML = Object.entries(byMuscle).map(([muscle, exercises]) => `
+  const legendLabel = statsMode === 'kg' ? 'Gewicht (kg)' : 'Wiederholungen';
+
+  container.innerHTML = toggle + Object.entries(byMuscle).map(([muscle, exercises]) => `
     <div class="muscle-section">
       <div class="muscle-title">${muscle}</div>
       ${exercises.map(exName => {
@@ -457,7 +466,7 @@ function renderStats() {
         return `<div class="ex-chart-wrap">
           <div class="ex-chart-name">${exName}</div>
           <div class="chart-legend">
-            <span><span class="legend-dot" style="background:#a78bfa"></span>Gewicht (kg)</span>
+            <span><span class="legend-dot" style="background:#a78bfa"></span>${legendLabel}</span>
           </div>
           <canvas id="chart-${exName.replace(/\s+/g,'_').replace(/[()°]/g,'')}" height="100"></canvas>
         </div>`;
@@ -472,13 +481,13 @@ function renderStats() {
         const id = 'chart-' + exName.replace(/\s+/g,'_').replace(/[()°]/g,'');
         const canvas = document.getElementById(id);
         if (!canvas) return;
-        drawChart(canvas, entries);
+        drawChart(canvas, entries, statsMode);
       });
     });
   }, 50);
 }
 
-function drawChart(canvas, entries) {
+function drawChart(canvas, entries, mode) {
   const shown = entries.slice(-5);
   const n = shown.length;
   const dpr = window.devicePixelRatio || 1;
@@ -496,15 +505,16 @@ function drawChart(canvas, entries) {
   const cW = W - pad.left - pad.right;
   const cH = H - pad.top - pad.bottom;
 
-  const kgs = shown.map(e => e.avgKg);
+  const vals = shown.map(e => mode === 'reps' ? e.avgReps : e.avgKg);
+  const unit = mode === 'reps' ? 'x' : ' kg';
   const labels = shown.map(e => e.date || 'KW' + e.kw);
 
-  const minKg = Math.min(...kgs);
-  const maxKg = Math.max(...kgs);
-  const rangeKg = maxKg - minKg || maxKg || 1;
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const rangeV = maxV - minV || maxV || 1;
 
   const xPos = (i) => pad.left + (n === 1 ? cW / 2 : (i / (n - 1)) * cW);
-  const yKg  = (v) => pad.top + cH * 0.1 + (1 - (v - minKg) / rangeKg) * cH * 0.8;
+  const yVal = (v) => pad.top + cH * 0.1 + (1 - (v - minV) / rangeV) * cH * 0.8;
 
   ctx.strokeStyle = 'rgba(255,255,255,0.06)';
   ctx.lineWidth = 0.5;
@@ -513,7 +523,7 @@ function drawChart(canvas, entries) {
     ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
   });
 
-  const pts = shown.map((_, i) => [xPos(i), yKg(kgs[i])]);
+  const pts = shown.map((_, i) => [xPos(i), yVal(vals[i])]);
 
   ctx.strokeStyle = '#a78bfa';
   ctx.lineWidth = 2;
@@ -528,7 +538,7 @@ function drawChart(canvas, entries) {
     ctx.fillStyle = 'rgba(242,242,247,0.9)';
     ctx.font = `10px -apple-system, sans-serif`;
     ctx.textAlign = i === 0 ? 'left' : i === n - 1 ? 'right' : 'center';
-    ctx.fillText(kgs[i] + ' kg', p[0], p[1] - 9);
+    ctx.fillText(vals[i] + unit, p[0], p[1] - 9);
   });
 
   ctx.fillStyle = 'rgba(142,142,147,0.8)';
@@ -629,6 +639,12 @@ function deleteLogEntry(idx) {
 }
 
 let calOffset = 0;
+let statsMode = 'kg';
+
+function setStatsMode(mode) {
+  statsMode = mode;
+  renderStats();
+}
 
 function getTrainedDays(year, month) {
   const trained = new Set();
@@ -809,7 +825,13 @@ function renderExercise() {
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='easy'?' selected-easy':''}" onclick="setRpe('easy')">Zu leicht</button>
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='right'?' selected-right':''}" onclick="setRpe('right')">Richtig</button>
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='hard'?' selected-hard':''}" onclick="setRpe('hard')">Zu schwer</button>
-    </div>`;
+    </div>
+    <textarea
+      class="comment-inp"
+      placeholder="Kommentar..."
+      oninput="saveComment('${ex.name.replace(/'/g,"\\'")}', this.value)"
+      style="width:100%;margin-top:16px;background:var(--s2);border:0.5px solid var(--border2);border-radius:var(--r-sm);color:var(--text);padding:12px 14px;font-size:14px;resize:none;min-height:76px;-webkit-appearance:none;font-family:-apple-system,sans-serif;line-height:1.5;box-sizing:border-box;"
+    >${loadLastComment(ex.name)}</textarea>`;
 
   const isLast = currentExIdx === total - 1;
   const prevBtn = document.getElementById('btn-prev');
@@ -836,6 +858,15 @@ function loadLastRpe(exName) {
 }
 function saveRpe(exName, val) {
   try { localStorage.setItem('rpe_' + exName, JSON.stringify(val)); } catch {}
+}
+function loadLastComment(exName) {
+  try { return localStorage.getItem('comment_' + exName) || ''; } catch { return ''; }
+}
+function saveComment(exName, text) {
+  try {
+    if (text.trim()) localStorage.setItem('comment_' + exName, text);
+    else localStorage.removeItem('comment_' + exName);
+  } catch {}
 }
 function loadLastWeights(exName, fallbackSets) {
   try {
