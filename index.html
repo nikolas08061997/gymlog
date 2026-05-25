@@ -344,11 +344,13 @@ const PLAN = [
     name: "Upper Push",
     muscles: ["Brust", "Schulter", "Trizeps"],
     exercises: [
-      { name: "Langhantel Schrägbankdrücken (30°)", muscle: "Brust", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
-      { name: "Kurzhantel Schulterdrücken", muscle: "Schulter", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
-      { name: "Chest Press Maschine", muscle: "Brust", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
-      { name: "Kabelzug Seitheben", muscle: "Schulter", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
-      { name: "Kabelzug Trizeps Pushdown", muscle: "Trizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Laufband", muscle: "Cardio", type: "cardio", sets: [{time:0,pace:0}] },
+      { name: "Kurzhantel Schrägbankdrücken", muscle: "Brust", type: "standard", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Kurzhantel Schulterdrücken", muscle: "Schulter", type: "standard", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Chest Press Maschine", muscle: "Brust", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Kurzhantel Seitheben", muscle: "Schulter", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Kabelzug Trizeps Pushdown", muscle: "Trizeps", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Butterfly Maschine", muscle: "Brust", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
     ]
   },
   {
@@ -356,11 +358,12 @@ const PLAN = [
     name: "Lower Quad",
     muscles: ["Quadrizeps", "Gluteus", "Core"],
     exercises: [
-      { name: "Langhantel Kniebeuge", muscle: "Quadrizeps", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
-      { name: "Bulgarischer Split Squat", muscle: "Quadrizeps", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
-      { name: "Beinpresse", muscle: "Quadrizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
-      { name: "Leg Extension Maschine", muscle: "Quadrizeps", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
-      { name: "Plank", muscle: "Core", sets: [{kg:0,reps:45},{kg:0,reps:45},{kg:0,reps:45}] },
+      { name: "Laufband", muscle: "Cardio", type: "cardio", sets: [{time:0,pace:0}] },
+      { name: "Langhantel Kniebeuge", muscle: "Quadrizeps", type: "standard", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Bulgarischer Split Squat", muscle: "Quadrizeps", type: "standard", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Beinpresse", muscle: "Quadrizeps", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Leg Extension Maschine", muscle: "Quadrizeps", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Plank", muscle: "Core", type: "plank", sets: [{time:60},{time:60},{time:60}] },
     ]
   },
   {
@@ -368,11 +371,13 @@ const PLAN = [
     name: "Upper Pull",
     muscles: ["Rücken", "Bizeps", "Schulter"],
     exercises: [
-      { name: "Langhantel Pendlay Row", muscle: "Rücken", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
-      { name: "Kurzhantel Einarmiges Rudern", muscle: "Rücken", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
-      { name: "Lat Pulldown Maschine", muscle: "Rücken", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
-      { name: "Kabelzug Face Pull", muscle: "Schulter", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
-      { name: "Kabelzug Bizeps Curl", muscle: "Bizeps", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Laufband", muscle: "Cardio", type: "cardio", sets: [{time:0,pace:0}] },
+      { name: "Langhantel Pendlay Row", muscle: "Rücken", type: "standard", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Kurzhantel Einarmiges Rudern", muscle: "Rücken", type: "standard", sets: [{kg:0,reps:8},{kg:0,reps:8},{kg:0,reps:8}] },
+      { name: "Lat Pulldown Maschine", muscle: "Rücken", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Kabelzug Face Pull", muscle: "Schulter", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "SZ-Stangen Bizeps Curl", muscle: "Bizeps", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Kurzhantel Hammer Curls", muscle: "Bizeps", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
     ]
   },
   {
@@ -380,11 +385,12 @@ const PLAN = [
     name: "Lower Hip",
     muscles: ["Hintere Oberschenkel", "Gluteus", "Core"],
     exercises: [
-      { name: "Rumänisches Kreuzheben (RDL)", muscle: "Hintere Oberschenkel", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
-      { name: "Kabelzug Glute Kickback", muscle: "Gluteus", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
-      { name: "Leg Curl Maschine", muscle: "Hintere Oberschenkel", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
-      { name: "Concept2 RowERG", muscle: "Rücken", sets: [{kg:0,reps:500},{kg:0,reps:500}] },
-      { name: "Cable Crunch", muscle: "Core", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Laufband", muscle: "Cardio", type: "cardio", sets: [{time:0,pace:0}] },
+      { name: "Rumänisches Kreuzheben (RDL)", muscle: "Hintere Oberschenkel", type: "standard", sets: [{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6},{kg:0,reps:6}] },
+      { name: "Abduktor Maschine", muscle: "Gluteus", type: "standard", sets: [{kg:0,reps:12},{kg:0,reps:12},{kg:0,reps:12}] },
+      { name: "Leg Curl Maschine", muscle: "Hintere Oberschenkel", type: "standard", sets: [{kg:0,reps:10},{kg:0,reps:10},{kg:0,reps:10}] },
+      { name: "Decline Crunch", muscle: "Core", type: "standard", sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}] },
+      { name: "Crunch Maschine", muscle: "Core", type: "standard", sets: [{kg:0,reps:15},{kg:0,reps:15},{kg:0,reps:15}] },
     ]
   },
 ];
@@ -488,7 +494,8 @@ function renderStats() {
 }
 
 function drawChart(canvas, entries, mode) {
-  const shown = entries.slice(-5);
+  const sorted = [...entries].sort((a, b) => (a.ts || a.kw) - (b.ts || b.kw));
+  const shown = sorted.slice(-5);
   const n = shown.length;
   const dpr = window.devicePixelRatio || 1;
   canvas.style.width = '100%';
@@ -770,6 +777,10 @@ function startDay(idx) {
   startTime = Date.now();
   const day = PLAN[idx];
   sessionSets = day.exercises.map(ex => {
+    const type = ex.type || 'standard';
+    if (type === 'cardio' || type === 'plank') {
+      return loadLastSets(ex.name, ex.sets).map(s => ({ ...s, done: false, rpe: null }));
+    }
     const lastKgs = loadLastWeights(ex.name, ex.sets);
     return ex.sets.map((s, i) => ({ kg: lastKgs[i] ?? s.kg, reps: s.reps, done: false, rpe: null }));
   });
@@ -790,30 +801,57 @@ function renderExercise() {
     `<div class="ex-dot${i < currentExIdx ? ' done-dot' : i === currentExIdx ? ' active-dot' : ''}"></div>`
   ).join('');
 
-  const setRows = sets.map((s, i) => `
-    <div class="set-row">
-      <div class="set-num">${i + 1}</div>
-      <input class="set-inp${s.done ? ' locked' : ''}" type="number" inputmode="decimal" value="${s.kg}" min="0" step="2.5"
-        onchange="updSet(${i},'kg',this.value)" ${s.done ? 'disabled' : ''}>
-      <input class="set-inp${s.done ? ' locked' : ''}" type="number" inputmode="numeric" value="${s.reps}" min="1" step="1"
-        onchange="updSet(${i},'reps',this.value)" ${s.done ? 'disabled' : ''}>
-      <button class="chk${s.done ? ' on' : ''}" onclick="togSet(${i})" aria-label="Set erledigt">
+  const exType = ex.type || 'standard';
+  let headerHtml, setRows;
+
+  if (exType === 'cardio') {
+    const s = sets[0];
+    headerHtml = `<div style="display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;margin-bottom:6px;">
+      <div class="sh-cell">Minuten</div><div class="sh-cell">km/h</div><div class="sh-cell"></div>
+    </div>`;
+    setRows = `<div style="display:grid;grid-template-columns:1fr 1fr 44px;gap:8px;align-items:center;margin-bottom:8px;">
+      <input class="set-inp${s.done?' locked':''}" type="number" inputmode="decimal" value="${s.time||''}" placeholder="0" min="0" step="1"
+        onchange="updSet(0,'time',this.value)" ${s.done?'disabled':''}>
+      <input class="set-inp${s.done?' locked':''}" type="number" inputmode="decimal" value="${s.pace||''}" placeholder="0" min="0" step="0.1"
+        onchange="updSet(0,'pace',this.value)" ${s.done?'disabled':''}>
+      <button class="chk${s.done?' on':''}" onclick="togSet(0)" aria-label="Set erledigt">
         <i class="ti ti-check" aria-hidden="true"></i>
       </button>
-    </div>`).join('');
-
-  document.getElementById('ex-body').innerHTML = `
-    <div style="margin-bottom:8px">
-      <div class="ex-name-big">${ex.name}</div>
-      <div class="ex-muscle-row"><span class="muscle-pill">${ex.muscle}</span></div>
-    </div>
-    <div class="sets-header">
+    </div>`;
+  } else if (exType === 'plank') {
+    headerHtml = `<div style="display:grid;grid-template-columns:32px 1fr 44px;gap:8px;margin-bottom:6px;">
+      <div class="sh-cell">Set</div><div class="sh-cell">Sekunden</div><div class="sh-cell"></div>
+    </div>`;
+    setRows = sets.map((s, i) => `
+      <div style="display:grid;grid-template-columns:32px 1fr 44px;gap:8px;align-items:center;margin-bottom:8px;">
+        <div class="set-num">${i + 1}</div>
+        <input class="set-inp${s.done?' locked':''}" type="number" inputmode="numeric" value="${s.time||''}" placeholder="60" min="0" step="5"
+          onchange="updSet(${i},'time',this.value)" ${s.done?'disabled':''}>
+        <button class="chk${s.done?' on':''}" onclick="togSet(${i})" aria-label="Set erledigt">
+          <i class="ti ti-check" aria-hidden="true"></i>
+        </button>
+      </div>`).join('');
+  } else {
+    headerHtml = `<div class="sets-header">
       <div class="sh-cell">Set</div>
       <div class="sh-cell">kg</div>
       <div class="sh-cell">Wdh</div>
       <div class="sh-cell"></div>
-    </div>
-    ${setRows}
+    </div>`;
+    setRows = sets.map((s, i) => `
+      <div class="set-row">
+        <div class="set-num">${i + 1}</div>
+        <input class="set-inp${s.done ? ' locked' : ''}" type="number" inputmode="decimal" value="${s.kg}" min="0" step="2.5"
+          onchange="updSet(${i},'kg',this.value)" ${s.done ? 'disabled' : ''}>
+        <input class="set-inp${s.done ? ' locked' : ''}" type="number" inputmode="numeric" value="${s.reps}" min="1" step="1"
+          onchange="updSet(${i},'reps',this.value)" ${s.done ? 'disabled' : ''}>
+        <button class="chk${s.done ? ' on' : ''}" onclick="togSet(${i})" aria-label="Set erledigt">
+          <i class="ti ti-check" aria-hidden="true"></i>
+        </button>
+      </div>`).join('');
+  }
+
+  const rpeAndComment = exType === 'standard' ? `
     ${(() => {
       const lastRpe = loadLastRpe(PLAN[currentDayIdx].exercises[currentExIdx].name);
       const labels = { easy: 'Zu leicht', right: 'Richtig', hard: 'Zu schwer' };
@@ -825,7 +863,16 @@ function renderExercise() {
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='easy'?' selected-easy':''}" onclick="setRpe('easy')">Zu leicht</button>
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='right'?' selected-right':''}" onclick="setRpe('right')">Richtig</button>
       <button class="rpe-btn${sessionSets[currentExIdx][0]?.rpe==='hard'?' selected-hard':''}" onclick="setRpe('hard')">Zu schwer</button>
+    </div>` : '';
+
+  document.getElementById('ex-body').innerHTML = `
+    <div style="margin-bottom:8px">
+      <div class="ex-name-big">${ex.name}</div>
+      <div class="ex-muscle-row"><span class="muscle-pill">${ex.muscle}</span></div>
     </div>
+    ${headerHtml}
+    ${setRows}
+    ${rpeAndComment}
     <textarea
       class="comment-inp"
       placeholder="Kommentar..."
@@ -877,6 +924,19 @@ function loadLastWeights(exName, fallbackSets) {
 }
 function saveWeights(exName, sets) {
   try { localStorage.setItem('weights_' + exName, JSON.stringify(sets.map(s => s.kg))); } catch {}
+}
+function loadLastSets(exName, fallbackSets) {
+  try {
+    const saved = JSON.parse(localStorage.getItem('sets_' + exName));
+    if (saved && saved.length === fallbackSets.length) return saved;
+  } catch {}
+  return fallbackSets.map(s => ({...s}));
+}
+function saveLastSets(exName, sets) {
+  try {
+    const toSave = sets.map(({done, rpe, ...rest}) => rest);
+    localStorage.setItem('sets_' + exName, JSON.stringify(toSave));
+  } catch {}
 }
 
 function setRpe(val) {
@@ -944,6 +1004,11 @@ function finishWorkout() {
   const history = loadHistory();
   const kw = getWeekNumber(sessionDate);
   PLAN[currentDayIdx].exercises.forEach((ex, i) => {
+    const type = ex.type || 'standard';
+    if (type === 'cardio' || type === 'plank') {
+      saveLastSets(ex.name, sessionSets[i]);
+      return;
+    }
     saveWeights(ex.name, sessionSets[i]);
     const doneSets = sessionSets[i].filter(s => s.done);
     if (doneSets.length === 0) return;
@@ -951,16 +1016,20 @@ function finishWorkout() {
     const avgReps = doneSets.reduce((a, s) => a + s.reps, 0) / doneSets.length;
     if (!history[ex.name]) history[ex.name] = [];
     const dateLabel = sessionDate.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
-    const entry = { kw, date: dateLabel, avgKg: Math.round(avgKg * 10) / 10, avgReps: Math.round(avgReps * 10) / 10 };
+    const entry = { kw, date: dateLabel, ts: sessionDate.getTime(), avgKg: Math.round(avgKg * 10) / 10, avgReps: Math.round(avgReps * 10) / 10 };
     history[ex.name].push(entry);
     history[ex.name] = history[ex.name].slice(-12);
   });
   saveHistory(history);
   let totalSets = 0, totalVol = 0;
   const totalEx = PLAN[currentDayIdx].exercises.length;
-  sessionSets.forEach(exSets => exSets.forEach(s => {
-    if (s.done) { totalSets++; totalVol += s.kg * s.reps; }
-  }));
+  sessionSets.forEach((exSets, exIdx) => {
+    const type = PLAN[currentDayIdx].exercises[exIdx].type || 'standard';
+    if (type !== 'standard') return;
+    exSets.forEach(s => {
+      if (s.done) { totalSets++; totalVol += s.kg * s.reps; }
+    });
+  });
   const mins = startTime ? Math.round((Date.now() - startTime) / 60000) : '—';
   document.getElementById('ds-sets').textContent = totalSets;
   document.getElementById('ds-vol').textContent = totalVol.toLocaleString('de-DE');
