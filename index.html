@@ -298,6 +298,15 @@
     </div>
   </div>
 
+  <!-- Settings -->
+  <div class="screen" id="scr-settings">
+    <div style="padding: 20px 20px 24px;">
+      <div style="font-size:30px;font-weight:600;letter-spacing:-0.5px;margin-bottom:4px;">Einstellungen</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:24px;">Datensicherung via GitHub Gist</div>
+      <div id="settings-content"></div>
+    </div>
+  </div>
+
   <!-- Log -->
   <div class="screen" id="scr-log">
     <div style="padding: 20px 20px 24px;">
@@ -330,6 +339,9 @@
     </button>
     <button class="ni" id="ni-hist" onclick="showLog()">
       <i class="ti ti-history" aria-hidden="true"></i>Verlauf
+    </button>
+    <button class="ni" id="ni-settings" onclick="showSettings()">
+      <i class="ti ti-settings" aria-hidden="true"></i>Backup
     </button>
   </div>
 </div>
@@ -1036,8 +1048,177 @@ function finishWorkout() {
   document.getElementById('ds-ex').textContent = totalEx;
   document.getElementById('ds-time').textContent = mins;
   document.getElementById('done-title').textContent = PLAN[currentDayIdx].name + ' — Done!';
+  if (getGistToken()) pushToGist().catch(() => {});
   showScreen('scr-done');
 }
+
+// ── Gist Sync ──────────────────────────────────────────────
+function getGistToken() { return localStorage.getItem('gist_token') || ''; }
+function getGistId()    { return localStorage.getItem('gist_id') || ''; }
+
+function collectSyncData() {
+  const skip = new Set(['gist_token','gist_id','gist_last_sync']);
+  const data = { lastSync: Date.now(), version: 1 };
+  Object.keys(localStorage).forEach(k => {
+    if (skip.has(k)) return;
+    try { data[k] = JSON.parse(localStorage.getItem(k)); }
+    catch { data[k] = localStorage.getItem(k); }
+  });
+  return data;
+}
+
+function restoreSyncData(data) {
+  const skip = new Set(['gist_token','gist_id','gist_last_sync','lastSync','version']);
+  Object.entries(data).forEach(([k, v]) => {
+    if (skip.has(k)) return;
+    localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+  });
+}
+
+async function gistFetch(method, path, body) {
+  const token = getGistToken();
+  if (!token) throw new Error('Kein Token');
+  const res = await fetch('https://api.github.com/gists' + path, {
+    method,
+    headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) throw new Error('GitHub API Fehler ' + res.status);
+  return res.json();
+}
+
+async function pushToGist() {
+  const content = JSON.stringify(collectSyncData(), null, 2);
+  const gistId = getGistId();
+  let result;
+  if (gistId) {
+    result = await gistFetch('PATCH', '/' + gistId, { files: { 'gymlog-data.json': { content } } });
+  } else {
+    result = await gistFetch('POST', '', {
+      description: 'GymLog Backup', public: false,
+      files: { 'gymlog-data.json': { content } }
+    });
+    localStorage.setItem('gist_id', result.id);
+  }
+  localStorage.setItem('gist_last_sync', Date.now().toString());
+  return result;
+}
+
+async function pullFromGist() {
+  const gistId = getGistId();
+  if (!gistId) throw new Error('Kein Gist gefunden');
+  const result = await gistFetch('GET', '/' + gistId);
+  const content = result.files['gymlog-data.json']?.content;
+  if (!content) throw new Error('Keine Daten im Gist');
+  restoreSyncData(JSON.parse(content));
+  localStorage.setItem('gist_last_sync', Date.now().toString());
+}
+
+function setSyncMsg(text, color) {
+  const el = document.getElementById('sync-msg');
+  if (el) { el.textContent = text; el.style.color = color || 'var(--text2)'; }
+}
+
+function showSettings() {
+  showScreen('scr-settings');
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('ni-settings').classList.add('active');
+  renderSettings();
+}
+
+function renderSettings() {
+  const token = getGistToken();
+  const gistId = getGistId();
+  const lastSync = localStorage.getItem('gist_last_sync');
+  const connected = !!(token && gistId);
+  const lastSyncStr = lastSync
+    ? new Date(parseInt(lastSync)).toLocaleString('de-DE', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    : '—';
+
+  document.getElementById('settings-content').innerHTML = `
+    <div style="background:var(--s1);border:0.5px solid ${connected ? 'rgba(48,209,88,0.3)' : 'var(--border2)'};border-radius:var(--r);padding:16px 20px;margin-bottom:24px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:${connected ? '6px' : '0'};">
+        <div style="width:8px;height:8px;border-radius:50%;background:${connected ? 'var(--green)' : 'var(--text3)'};flex-shrink:0;"></div>
+        <div style="font-size:15px;font-weight:500;">${connected ? 'Verbunden' : 'Nicht verbunden'}</div>
+      </div>
+      ${connected ? `<div style="font-size:12px;color:var(--text2);">Gist: ${gistId.substring(0,10)}... · Sync: ${lastSyncStr}</div>` : ''}
+    </div>
+
+    <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">GitHub Personal Access Token</div>
+    <input id="token-input" type="password" placeholder="ghp_..." value="${token}"
+      style="width:100%;background:var(--s2);border:0.5px solid var(--border2);border-radius:var(--r-sm);color:var(--text);padding:14px;font-size:15px;-webkit-appearance:none;box-sizing:border-box;margin-bottom:10px;">
+    <button onclick="saveGistToken()" style="width:100%;padding:14px;border-radius:var(--r);border:none;background:var(--accent);color:#fff;font-size:16px;font-weight:600;cursor:pointer;-webkit-appearance:none;margin-bottom:20px;">
+      ${connected ? 'Token aktualisieren' : 'Verbinden & Gist erstellen'}
+    </button>
+
+    <div id="sync-msg" style="font-size:13px;text-align:center;min-height:20px;margin-bottom:16px;"></div>
+
+    ${connected ? `
+    <div style="font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:8px;">Manuell synchronisieren</div>
+    <div style="display:flex;gap:10px;margin-bottom:24px;">
+      <button onclick="manualPush()" style="flex:1;padding:14px;border-radius:var(--r);border:0.5px solid var(--border2);background:var(--s1);color:var(--text);font-size:14px;cursor:pointer;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <i class="ti ti-cloud-upload"></i>Hochladen
+      </button>
+      <button onclick="manualPull()" style="flex:1;padding:14px;border-radius:var(--r);border:0.5px solid var(--border2);background:var(--s1);color:var(--text);font-size:14px;cursor:pointer;-webkit-appearance:none;display:flex;align-items:center;justify-content:center;gap:6px;">
+        <i class="ti ti-cloud-download"></i>Herunterladen
+      </button>
+    </div>
+    <button onclick="disconnectGist()" style="width:100%;padding:14px;border-radius:var(--r);border:0.5px solid var(--red);background:transparent;color:var(--red);font-size:15px;cursor:pointer;-webkit-appearance:none;">
+      Verbindung trennen
+    </button>` : ''}
+
+    <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:24px;line-height:1.7;">
+      Token benötigt nur den Scope <span style="color:var(--text2);font-weight:500;">gist</span>.<br>
+      Daten werden in einem privaten Gist gespeichert.<br>
+      Nach jedem Training wird automatisch hochgeladen.
+    </div>`;
+}
+
+async function saveGistToken() {
+  const token = document.getElementById('token-input')?.value.trim();
+  if (!token) return;
+  localStorage.setItem('gist_token', token);
+  localStorage.removeItem('gist_id');
+  setSyncMsg('Verbinde mit GitHub...', 'var(--text2)');
+  try {
+    await pushToGist();
+    renderSettings();
+    setSyncMsg('✓ Verbunden und Backup erstellt', 'var(--green)');
+  } catch(e) {
+    setSyncMsg('✗ ' + e.message, 'var(--red)');
+  }
+}
+
+async function manualPush() {
+  setSyncMsg('Wird hochgeladen...', 'var(--text2)');
+  try {
+    await pushToGist();
+    renderSettings();
+    setSyncMsg('✓ Erfolgreich hochgeladen', 'var(--green)');
+  } catch(e) {
+    setSyncMsg('✗ Fehler beim Hochladen', 'var(--red)');
+  }
+}
+
+async function manualPull() {
+  setSyncMsg('Wird heruntergeladen...', 'var(--text2)');
+  try {
+    await pullFromGist();
+    renderSettings();
+    showWeek();
+    setSyncMsg('✓ Daten wiederhergestellt', 'var(--green)');
+  } catch(e) {
+    setSyncMsg('✗ Fehler beim Herunterladen', 'var(--red)');
+  }
+}
+
+function disconnectGist() {
+  localStorage.removeItem('gist_token');
+  localStorage.removeItem('gist_id');
+  localStorage.removeItem('gist_last_sync');
+  renderSettings();
+}
+// ── Ende Gist Sync ──────────────────────────────────────────
 
 // Init
 if (window.visualViewport) {
