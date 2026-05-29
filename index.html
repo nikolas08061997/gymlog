@@ -532,7 +532,7 @@ function drawChart(canvas, entries, mode) {
   const maxV = Math.max(...vals);
   const rangeV = maxV - minV || maxV || 1;
 
-  const xPos = (i) => pad.left + (n === 1 ? cW / 2 : (i / (n - 1)) * cW);
+  const xPos = (i) => pad.left + (n === 1 ? 0 : (i / (n - 1)) * cW);
   const yVal = (v) => pad.top + cH * 0.1 + (1 - (v - minV) / rangeV) * cH * 0.8;
 
   ctx.strokeStyle = 'rgba(255,255,255,0.06)';
